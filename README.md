@@ -10,4 +10,3 @@ Depois rode o app, rode esse dódigo: app.py run;
 
 Em seguida, clique no link http://127.0.0.1:5000 e navegue pelo site
 
-apenas teste
