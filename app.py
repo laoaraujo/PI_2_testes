@@ -70,7 +70,7 @@ def register():
     # Verifique se existem solicitações POST "username", "password" e "email" (formulário enviado pelo usuário)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
         # Crie variáveis ​​para facilitar o acesso
-        fullname = request.form['fullname']
+        departamento = request.form['departamento']
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
@@ -92,7 +92,7 @@ def register():
             flash('Por favor, preencha o formulário!')
         else:
             # A conta não existe e os dados do formulário são válidos, agora insira uma nova conta na tabela de usuários
-            cursor.execute("INSERT INTO users (fullname, username, password, email) VALUES (%s,%s,%s,%s)", (fullname, username, _hashed_password, email))
+            cursor.execute("INSERT INTO users (departamento, username, password, email) VALUES (%s,%s,%s,%s)", (departamento, username, _hashed_password, email))
             conn.commit()
             flash('Você se registrou com sucesso!')
     elif request.method == 'POST':
@@ -124,7 +124,160 @@ def profile():
         return render_template('profile.html', account=account)
     # O usuário não está logado redirecionar para a página de login
     return redirect(url_for('login'))
+
+
+
+
+@app.route('/tabelaoption')
+def tabelaoption(): 
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+   
+    # Verifique se o usuário está logado
+    if 'loggedin' in session:
+        cursor.execute('SELECT * FROM users WHERE id = %s', [session['id']])
+        account = cursor.fetchone()
+
+
+        # Mostrar a página de perfil com informações da conta
+        return render_template('tabelaoption.html', account=account)
+
+    # O usuário não está logado redirecionar para a página de login
+    return redirect(url_for('login'))
+
+
+@app.route('/index')
+def index(): 
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+   
+    # Verifique se o usuário está logado
+    if 'loggedin' in session:
+        cursor.execute('SELECT * FROM users WHERE id = %s', [session['id']])
+        account = cursor.fetchone()
+
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        s = "SELECT * FROM students"
+        cur.execute(s) # Execute the SQL
+        list_users = cur.fetchall()
+        # Mostrar a página de perfil com informações da conta
+        return render_template('index.html', account=account, list_users = list_users)
+    # O usuário não está logado redirecionar para a página de login
+    return redirect(url_for('login'))
+
+
+
+
+@app.route('/tabela')
+def tabela(): 
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+   
+    # Verifique se o usuário está logado
+    if 'loggedin' in session:
+        cursor.execute('SELECT * FROM users WHERE id = %s', [session['id']])
+        account = cursor.fetchone()
+
+
+        # Mostrar a página de perfil com informações da conta
+        return render_template('tabela.html', account=account)
+
+    # O usuário não está logado redirecionar para a página de login
+    return redirect(url_for('login'))
+
+
+
+@app.route('/add_student', methods=['POST'])
+def add_student():
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    if request.method == 'POST':
+        livre= request.form['livre']
+        usuario = request.form['usuario']
+        departamento= request.form['departamento']
+        nomel= request.form['nomel']
+        nomeresponsavel = request.form['nomeresponsavel']
+        parentesco = request.form['parentesco']
+        descricao= request.form['descricao']
+        cur.execute("INSERT INTO students (livre, usuario, departamento, nomel, nomeresponsavel,parentesco,descricao) VALUES (%s,%s,%s,%s,%s,%s,%s)", (livre, usuario, departamento,nomel, nomeresponsavel,parentesco,descricao ))
+        conn.commit()
+        flash('Registrado com Sucesso')
+        return redirect(url_for('tabela'))
+ 
+@app.route('/edit/<id>', methods = ['POST', 'GET'])
+def get_employee(id):
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+   
+    cur.execute('SELECT * FROM students WHERE id = %s', [id])
+    data = cur.fetchall()
+    cur.close()
+    print(data[0])
+    return render_template('edit.html', student = data[0])
+
+ 
+@app.route('/update/<id>', methods=['POST'])
+def update_student(id):
+    if request.method == 'POST':
+        livre= request.form['livre']
+        usuario = request.form['usuario']
+        departamento = request.form['departamento']
+        nomel= request.form['nomel']
+        nomeresponsavel = request.form['nomeresponsavel']
+        parentesco = request.form['parentesco']
+        descricao= request.form['descricao']
+         
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute("""
+            UPDATE students
+            SET livre = %s,
+                usuario = %s,
+                departamento = %s,
+                nomel = %s,
+                nomeresponsavel= %s,
+                parentesco = %s,
+                descricao= %s
+            WHERE id = %s
+        """, (livre, usuario, departamento, nomel, nomeresponsavel,parentesco, descricao , id))
+        flash('Registro Atualizado com sucesso')
+        conn.commit()
+        return redirect(url_for('index'))
+
+@app.route('/edit2/<id>', methods = ['POST', 'GET'])
+def get_employee2(id):
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+   
+    cur.execute('SELECT * FROM students WHERE id = %s', [id])
+    data = cur.fetchall()
+    cur.close()
+    print(data[0])
+    return render_template('edit2.html', student = data[0])
+
+ 
+@app.route('/update2/<id>', methods=['POST'])
+def update_student2(id):
+    if request.method == 'POST':
+    
+        parentesco = request.form['parentesco']
+        
+         
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute("""
+            UPDATE students
+            SET 
+                parentesco = %s
+            
+            WHERE id = %s
+        """, (parentesco, id))
+        flash('Registro Atualizado com sucesso')
+        conn.commit()
+        return redirect(url_for('index'))
+ 
+@app.route('/delete/<string:id>', methods = ['POST','GET'])
+def delete_student(id):
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+   
+    cur.execute('DELETE FROM students WHERE id = {0}'.format(id))
+    conn.commit()
+    flash('Registro deletado com Sucesso')
+    return redirect(url_for('index'))
  
 if __name__ == "__main__":
     app.run(debug=True)
+
 

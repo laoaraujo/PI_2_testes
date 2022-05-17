@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+  
+{% block title %}Home{% endblock %}
+  
+{% block content %}
+<h1 class="h2">Sistema Integrado de Registro de Atendimento de Alunos</h1>
+<br>
+<div>
+<div class="container">
+ <a href="{{ url_for('tabela') }}" class="btn btn-secondary btn-sm" ><h5>REGISTRO DE ATENDIMENTO</h5></a>
+ <br><br>
+ <a href="{{ url_for('index') }}" class="btn btn-secondary btn-sm"><h5>CONSULTA DE ATENDIMENTO</h5></a>
+  
+</div>
+{% endblock %}

@@ -11,12 +11,11 @@
  </head>
  <body style="background-color:#ccc;">
   <div class="login-box" >
-  <div class="login-header">Login</div>
+  <div class="login-header">SIRA</div>
   <div class="login-body">
-    <p>Por favor insira seu nome de usuário e senha!</p>
-    <form class="form-group" action="{{ url_for('login') }}" method="post">
+   <form class="form-group" action="{{ url_for('login') }}" method="post">
         <label>Nome</label>
-        <input type="text" class="form-control" name="username" placeholder="Username" id="username" required>
+        <input type="text" class="form-control" name="username" placeholder="Nome" id="username" required>
         <label>Senha</label>
         <input type="password" class="form-control" name="password" placeholder="Password" id="password" required>
         <input type="checkbox" value="checked"><b>Lembrar</b>
